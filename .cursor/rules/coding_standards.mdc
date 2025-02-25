@@ -1,0 +1,45 @@
+---
+description: Coding Standards
+globs: *.ts,*.tsx,*.js,*.jsx
+---
+# Coding Standards for Starknet Agent
+
+## Naming Conventions
+- Variables and functions: Use `camelCase` (e.g., `fetchData`, `generateEmbeddings`).
+- Classes and components: Use `PascalCase` (e.g., `RagAgent`, `ChatInterface`).
+- Constants: Use `UPPER_CASE` with underscores (e.g., `DEFAULT_CHAT_MODEL`).
+- Type interfaces: Use `PascalCase` with `I` prefix (e.g., `IAgentConfig`).
+
+## Indentation and Formatting
+- Use 2 spaces for indentation (no tabs).
+- Keep lines under 100 characters where possible.
+- Place opening braces on the same line as the statement (e.g., `if (condition) {`).
+- Use Prettier for consistent formatting across the codebase.
+
+## Comments
+- Add JSDoc comments for functions and classes, especially in the agent pipeline.
+- Use `//` for single-line comments and `/* ... */` for multi-line comments.
+- Example: `// Retrieve relevant documents from the vector database`.
+
+## TypeScript Usage
+- Use explicit typing for function parameters and return values.
+- Prefer interfaces over types for object definitions.
+- Use generics where appropriate, especially in the pipeline components.
+- Example: `function processQuery<T extends BaseQuery>(query: T): Promise<QueryResult>`
+
+## Error Handling
+- Wrap async operations in `try/catch` blocks.
+- Log errors with context (e.g., `console.error('Failed to retrieve documents:', error)`).
+- Use custom error classes for specific error types in the agent pipeline.
+
+## Testing
+- Write unit tests for utility functions and pipeline components.
+- Use Jest for testing framework.
+- Mock external dependencies in tests.
+- Aim for high test coverage in core agent functionality.
+
+## Code Organization
+- Keep files focused on a single responsibility.
+- Group related functionality in directories.
+- Use barrel exports (index.ts files) to simplify imports.
+- Separate business logic from UI components.

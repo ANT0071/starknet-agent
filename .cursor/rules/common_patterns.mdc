@@ -1,0 +1,49 @@
+---
+description: Common Patterns
+globs: *.ts,*.tsx,*.js,*.jsx
+---
+# Common Patterns in Starknet Agent
+
+## Factory Pattern
+- Used for creating RAG agents with different configurations.
+- Example: `packages/agents/src/ragAgentFactory.ts`
+  - Creates different agent instances based on configuration.
+
+## Pipeline Pattern
+- Used for processing queries through a series of steps.
+- Example: `packages/agents/src/pipeline/`
+  - Components: Query Processing → Document Retrieval → Response Generation
+  - Each step transforms the input and passes it to the next step.
+
+## Repository Pattern
+- Used for database interactions.
+- Example: `packages/agents/src/db/`
+  - Abstracts database operations behind a clean interface.
+  - Handles MongoDB vector search operations.
+
+## WebSocket Communication
+- Used for real-time streaming of agent responses.
+- Example: `packages/backend/src/websocket/`
+  - Pattern: Client connects → Sends query → Server streams response chunks.
+
+## Configuration Management
+- Centralized configuration using TOML files.
+- Example: `packages/agents/config.toml` and `packages/agents/src/config.ts`
+  - Loads configuration from files and environment variables.
+  - Provides typed access to configuration values.
+
+## Dependency Injection
+- Used for providing services to components.
+- Example: Passing database clients and LLM providers to agent instances.
+  - Makes testing easier by allowing mock implementations.
+
+## React Hooks for State Management
+- Custom hooks for managing UI state.
+- Example: `packages/ui/lib/hooks/`
+  - Encapsulates WebSocket connection logic.
+  - Manages chat history and UI state.
+
+## Error Handling and Logging
+- Centralized error handling with detailed logging.
+- Example: Try-catch blocks with context-rich error messages.
+  - Logs include timestamps, error context, and stack traces.

@@ -1,0 +1,47 @@
+---
+description: Project Instructions
+globs:
+---
+# Starknet Agent Project Instructions
+
+## Overview
+- Starknet Agent is an AI-powered search engine specifically designed for the Starknet Ecosystem.
+- It uses Retrieval-Augmented Generation (RAG) to provide accurate, source-cited answers to questions about Starknet and Cairo.
+- The project is built with TypeScript, Node.js, Express, MongoDB, and Next.js.
+
+## Architecture
+- Monorepo structure with multiple packages:
+  - `packages/agents/`: Core RAG agent implementation
+  - `packages/backend/`: Express server with WebSocket support
+  - `packages/ui/`: Next.js frontend application
+  - `packages/ingester/`: Data ingestion tools
+  - `packages/typescript-config/`: Shared TypeScript configuration
+
+## Key Features
+- RAG-based search across multiple Starknet resources
+- Real-time streaming of responses
+- Multiple focus modes for specific resources
+- Source citations for all answers
+- Chat history for context in follow-up questions
+
+## Development Workflow
+- Use `turbo dev` to start the development server
+- MongoDB Atlas is used for vector database storage
+- Configuration is managed through TOML files
+- Docker is used for containerization and deployment
+
+## AI Guidance
+- Focus on the RAG pipeline in `packages/agents/src/pipeline/` for agent-related queries
+- Use `packages/backend/src/websocket/` for understanding real-time communication
+- Refer to `packages/ui/components/` for UI-related questions
+- Check `packages/ingester/scripts/` for data ingestion processes
+
+## Testing
+- Jest is used for testing
+- Run tests with `turbo test`
+- Test files are located in `__tests__/` directories
+
+## Deployment
+- Docker Compose is used for deployment
+- Production configuration is in `docker-compose.prod-hosted.yml`
+- Environment variables should be set according to `.env.example` files
