@@ -1,32 +1,31 @@
 'use client';
 
-import { PostHogProvider as OriginalPostHogProvider } from 'posthog-js/react';
+import posthog from 'posthog-js';
+import { PostHogProvider as PHProvider } from 'posthog-js/react';
+import { useEffect } from 'react';
 
 export default function PostHogProviderClient({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const posthogKey = process.env.NEXT_PUBLIC_POSTHOG_KEY;
-  const posthogHost = process.env.NEXT_PUBLIC_POSTHOG_HOST;
+  useEffect(() => {
+    const posthogKey = process.env.NEXT_PUBLIC_POSTHOG_KEY;
+    const posthogHost = process.env.NEXT_PUBLIC_POSTHOG_HOST;
 
-  if (!posthogKey || !posthogHost) {
-    console.log('PostHog credentials missing, rendering without PostHog');
-    return <>{children}</>;
-  }
+    if (!posthogKey || !posthogHost) {
+      console.log('PostHog credentials missing, rendering without PostHog');
+      return;
+    }
 
-  return (
-    <OriginalPostHogProvider
-      apiKey={posthogKey}
-      options={{
-        api_host: posthogHost,
-        session_recording: {
-          recordCrossOriginIframes: true,
-        },
-        capture_pageleave: false,
-      }}
-    >
-      {children}
-    </OriginalPostHogProvider>
-  );
+    posthog.init(posthogKey, {
+      api_host: posthogHost,
+      session_recording: {
+        recordCrossOriginIframes: true,
+      },
+      capture_pageleave: false,
+    });
+  }, []);
+
+  return <PHProvider client={posthog}>{children}</PHProvider>;
 }
