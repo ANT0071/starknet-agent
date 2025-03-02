@@ -24,6 +24,13 @@
       "dependsOn": ["build"],
       "cache": false,
       "persistent": true
+    },
+    "generate-embeddings": {
+      "dependsOn": ["build"],
+      "cache": false,
+      "interactive": true,
+      "persistent": true
     }
-  }
+  },
+  "ui": "tui"
 }

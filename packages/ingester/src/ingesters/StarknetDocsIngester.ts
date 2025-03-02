@@ -2,6 +2,7 @@ import * as path from 'path';
 import { BookConfig, BookPageDto, ParsedSection } from '../utils/types';
 import { AsciiDocIngester, AsciiDocIngesterConfig } from './AsciiDocIngester';
 import { processDocFiles } from '../utils/fileUtils';
+import * as fs from 'fs';
 
 /**
  * Ingester for the Starknet documentation
@@ -24,11 +25,24 @@ export class StarknetDocsIngester extends AsciiDocIngester {
       baseUrl: 'https://docs.starknet.io',
     };
 
+    // Find the package root by looking for package.json
+    let packageRoot = __dirname;
+    while (
+      !fs.existsSync(path.join(packageRoot, 'package.json')) &&
+      packageRoot !== '/'
+    ) {
+      packageRoot = path.dirname(packageRoot);
+    }
+
+    if (packageRoot === '/') {
+      throw new Error('Could not find package.json in any parent directory');
+    }
+
     const asciiDocIngesterConfig: AsciiDocIngesterConfig = {
       bookConfig: config,
-      playbookPath: path.join(__dirname, '..', 'playbook.yml'),
-      outputDir: path.join(__dirname, '..', 'antora-output'),
-      restructuredDir: path.join(__dirname, '..', 'starknet-docs-restructured'),
+      playbookPath: path.join(packageRoot, 'asciidoc', 'playbook.yml'),
+      outputDir: path.join(packageRoot, 'antora-output'),
+      restructuredDir: path.join(packageRoot, 'starknet-docs-restructured'),
       source: 'starknet_docs',
     };
 

@@ -2,10 +2,19 @@
   "extends": "@starknet-agent/typescript-config/base.json",
   "compilerOptions": {
     "outDir": "dist",
+    "sourceMap": true,
     "esModuleInterop": true,
-    "moduleResolution": "Bundler",
-    "module": "ESNext"
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true
   },
-  "include": ["src", "__tests__"],
-  "exclude": ["node_modules"]
+  "include": [
+    "src",
+    "**/*.test.ts",
+    "asciidoc/lunr-tokenizer.js",
+    "asciidoc/asciidoc-output-extension.js"
+  ],
+  "exclude": ["node_modules", "**/*.spec.ts"]
 }

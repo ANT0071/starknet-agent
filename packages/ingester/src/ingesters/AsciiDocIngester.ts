@@ -22,6 +22,7 @@ import {
 import { processDocFiles } from '../utils/fileUtils';
 import logger from '@starknet-agent/agents/utils/logger';
 import { execSync } from 'child_process';
+import * as fsSync from 'fs';
 
 /**
  * Common interface for AsciiDoc ingester configuration
@@ -70,9 +71,22 @@ export abstract class AsciiDocIngester extends BaseIngester {
     logger.info('Running Antora to build documentation');
     const antoraCommand = `antora ${this.playbookPath}`;
 
+    // Find the package root by looking for package.json
+    let packageRoot = __dirname;
+    while (
+      !fsSync.existsSync(path.join(packageRoot, 'package.json')) &&
+      packageRoot !== '/'
+    ) {
+      packageRoot = path.dirname(packageRoot);
+    }
+
+    if (packageRoot === '/') {
+      throw new Error('Could not find package.json in any parent directory');
+    }
+
     try {
       execSync(antoraCommand, {
-        cwd: path.join(__dirname, '..'),
+        cwd: packageRoot,
         stdio: 'inherit',
       });
       logger.info('Antora documentation generation completed successfully');
@@ -85,7 +99,7 @@ export abstract class AsciiDocIngester extends BaseIngester {
       await fs.mkdir(this.outputDir, { recursive: true }).catch(() => {});
     } finally {
       await fs
-        .rm(path.join(__dirname, '..', 'build'), {
+        .rm(path.join(packageRoot, 'asciidoc', 'build'), {
           recursive: true,
           force: true,
         })

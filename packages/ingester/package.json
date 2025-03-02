@@ -2,7 +2,9 @@
   "name": "@starknet-agent/ingester",
   "version": "1.0.0",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "build": "tsc -p tsconfig.json",
+    "generate-embeddings": "node ./dist/src/generateEmbeddings.js"
   },
   "dependencies": {
     "@antora/lunr-extension": "1.0.0-alpha.10",

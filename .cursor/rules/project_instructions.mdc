@@ -14,7 +14,7 @@ globs:
   - `packages/agents/`: Core RAG agent implementation
   - `packages/backend/`: Express server with WebSocket support
   - `packages/ui/`: Next.js frontend application
-  - `packages/ingester/`: Data ingestion tools
+  - `packages/ingester/`: Data ingestion tools for documentation sources
   - `packages/typescript-config/`: Shared TypeScript configuration
 
 ## Key Features
@@ -23,25 +23,42 @@ globs:
 - Multiple focus modes for specific resources
 - Source citations for all answers
 - Chat history for context in follow-up questions
+- Modular ingestion system for various documentation sources
+
+## Ingestion System
+- The ingester package handles downloading, processing, and storing documentation.
+- Supported documentation sources:
+  - Cairo Book
+  - Starknet Docs
+  - Starknet Foundry
+  - Cairo By Example
+  - OpenZeppelin Docs
+- Modular architecture with a `BaseIngester` abstract class and source-specific implementations.
+- Follows the template method pattern for standardized ingestion process.
+- Run ingestion with `pnpm run generate-embeddings` from the project root.
 
 ## Development Workflow
 - Use `turbo dev` to start the development server
 - MongoDB Atlas is used for vector database storage
 - Configuration is managed through TOML files
 - Docker is used for containerization and deployment
+- Add new documentation sources by extending the `BaseIngester` class
 
 ## AI Guidance
 - Focus on the RAG pipeline in `packages/agents/src/pipeline/` for agent-related queries
 - Use `packages/backend/src/websocket/` for understanding real-time communication
 - Refer to `packages/ui/components/` for UI-related questions
-- Check `packages/ingester/scripts/` for data ingestion processes
+- Check `packages/ingester/src/ingesters/` for documentation ingestion processes
+- Review `packages/ingester/src/BaseIngester.ts` for the ingestion template method pattern
 
 ## Testing
 - Jest is used for testing
 - Run tests with `turbo test`
 - Test files are located in `__tests__/` directories
+- Test ingester implementations separately with mocked vector stores
 
 ## Deployment
 - Docker Compose is used for deployment
 - Production configuration is in `docker-compose.prod-hosted.yml`
 - Environment variables should be set according to `.env.example` files
+- Ingestion can be run as a separate process using `ingest.dockerfile`

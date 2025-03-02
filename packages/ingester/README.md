@@ -88,8 +88,11 @@ The package includes several utility modules:
 To use the ingester package, run the `generateEmbeddings.ts` script:
 
 ```bash
-# From the root of the project
+# From the root of the package
 pnpm run generate-embeddings
+
+# From the root of the project
+turbo run generate-embeddings
 ```
 
 This will prompt you to select a documentation source to ingest. You can also select "Everything" to ingest all sources.
@@ -151,13 +154,4 @@ pnpm build
 ```bash
 # Run tests
 pnpm test
-```
-
-### Code Style
-
-The package follows the project's coding standards. Make sure to run the linter before committing:
-
-```bash
-# Run linter
-pnpm lint
 ```

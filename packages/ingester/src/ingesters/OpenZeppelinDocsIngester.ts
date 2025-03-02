@@ -1,4 +1,5 @@
-import * as fs from 'fs/promises';
+import * as fs from 'fs';
+import * as fsPromises from 'fs/promises';
 import * as path from 'path';
 import { VectorStore } from '@starknet-agent/agents/index';
 import { BaseIngester } from '../BaseIngester';
@@ -28,11 +29,24 @@ export class OpenZeppelinDocsIngester extends AsciiDocIngester {
       baseUrl: 'https://docs.openzeppelin.com',
     };
 
+    // Find the package root by looking for package.json
+    let packageRoot = __dirname;
+    while (
+      !fs.existsSync(path.join(packageRoot, 'package.json')) &&
+      packageRoot !== '/'
+    ) {
+      packageRoot = path.dirname(packageRoot);
+    }
+
+    if (packageRoot === '/') {
+      throw new Error('Could not find package.json in any parent directory');
+    }
+
     const asciiDocIngesterConfig: AsciiDocIngesterConfig = {
       bookConfig: config,
-      playbookPath: path.join(__dirname, '..', 'oz-playbook.yml'),
-      outputDir: path.join(__dirname, '..', 'antora-output'),
-      restructuredDir: path.join(__dirname, '..', 'oz-docs-restructured'),
+      playbookPath: path.join(packageRoot, 'asciidoc', 'oz-playbook.yml'),
+      outputDir: path.join(packageRoot, 'antora-output'),
+      restructuredDir: path.join(packageRoot, 'oz-docs-restructured'),
       source: 'openzeppelin_docs',
     };
     super(asciiDocIngesterConfig);
@@ -55,7 +69,7 @@ export class OpenZeppelinDocsIngester extends AsciiDocIngester {
       const pages: BookPageDto[] = [];
 
       async function processDirectory(dir: string) {
-        const entries = await fs.readdir(dir, { withFileTypes: true });
+        const entries = await fsPromises.readdir(dir, { withFileTypes: true });
 
         for (const entry of entries) {
           const fullPath = path.join(dir, entry.name);
@@ -68,7 +82,7 @@ export class OpenZeppelinDocsIngester extends AsciiDocIngester {
             path.extname(entry.name).toLowerCase() === config.fileExtension
           ) {
             // Process AsciiDoc files
-            const content = await fs.readFile(fullPath, 'utf8');
+            const content = await fsPromises.readFile(fullPath, 'utf8');
 
             // Inject cairo-contracts/1.0.0 in the fullPath to reflect online website directory structure
             // This is the special handling for OpenZeppelin docs

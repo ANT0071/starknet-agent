@@ -66,3 +66,40 @@ The Starknet Agent codebase is organized as a monorepo with multiple packages:
 - **To see how user queries are processed**: Start at the WebSocket handlers in `packages/backend/src/websocket`
 - **To explore the UI components**: Look at the components in `packages/ui/components`
 - **To understand data ingestion**: Check the scripts in `packages/ingester/scripts`
+
+## Ingester Package
+- `packages/ingester/src/`: Source code for the ingester package
+  - `BaseIngester.ts`: Abstract base class for all ingesters
+  - `IngesterFactory.ts`: Factory for creating ingesters based on source
+  - `ingesters/`: Source-specific ingester implementations
+    - `CairoBookIngester.ts`: Ingester for Cairo Book
+    - `StarknetDocsIngester.ts`: Ingester for Starknet Docs
+    - `StarknetFoundryIngester.ts`: Ingester for Starknet Foundry
+    - `CairoByExampleIngester.ts`: Ingester for Cairo By Example
+    - `OpenZeppelinDocsIngester.ts`: Ingester for OpenZeppelin Docs
+  - `utils/`: Utility functions
+    - `fileUtils.ts`: File operations
+    - `contentUtils.ts`: Content processing
+    - `vectorStoreUtils.ts`: Vector store operations
+  - `types.ts`: Common types and interfaces
+  - `scripts/`: Scripts for running ingestion
+    - `generateEmbeddings.ts`: Main script for generating embeddings
+
+## Key Files for Common Tasks
+
+### Adding a New Documentation Source
+1. Create a new ingester in `packages/ingester/src/ingesters/`
+2. Update `IngesterFactory.ts` to include the new source
+3. Update the `DocumentSource` type in `packages/agents/src/types.ts`
+
+### Modifying the RAG Pipeline
+1. Update the relevant component in `packages/agents/src/pipeline/`
+2. Adjust the configuration in `packages/agents/config.toml` if needed
+
+### Updating the UI
+1. Modify the relevant component in `packages/ui/components/`
+2. Update styles in `packages/ui/styles/` if needed
+
+### Running Ingestion
+1. Use the script at `packages/ingester/src/scripts/generateEmbeddings.ts`
+2. Or run `pnpm run generate-embeddings` from the project root

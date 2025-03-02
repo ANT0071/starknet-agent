@@ -9,6 +9,7 @@ globs: *.ts,*.tsx,*.js,*.jsx
 - Classes and components: Use `PascalCase` (e.g., `RagAgent`, `ChatInterface`).
 - Constants: Use `UPPER_CASE` with underscores (e.g., `DEFAULT_CHAT_MODEL`).
 - Type interfaces: Use `PascalCase` with `I` prefix (e.g., `IAgentConfig`).
+- Ingester classes: Use `PascalCase` with `Ingester` suffix (e.g., `CairoBookIngester`).
 
 ## Indentation and Formatting
 - Use 2 spaces for indentation (no tabs).
@@ -17,29 +18,35 @@ globs: *.ts,*.tsx,*.js,*.jsx
 - Use Prettier for consistent formatting across the codebase.
 
 ## Comments
-- Add JSDoc comments for functions and classes, especially in the agent pipeline.
+- Add JSDoc comments for functions and classes, especially in the agent pipeline and ingester components.
 - Use `//` for single-line comments and `/* ... */` for multi-line comments.
 - Example: `// Retrieve relevant documents from the vector database`.
+- Document ingester classes with clear descriptions of the source and processing approach.
 
 ## TypeScript Usage
 - Use explicit typing for function parameters and return values.
 - Prefer interfaces over types for object definitions.
-- Use generics where appropriate, especially in the pipeline components.
+- Use generics where appropriate, especially in the pipeline components and ingester classes.
 - Example: `function processQuery<T extends BaseQuery>(query: T): Promise<QueryResult>`
+- Use abstract classes for base implementations (e.g., `BaseIngester`).
 
 ## Error Handling
 - Wrap async operations in `try/catch` blocks.
 - Log errors with context (e.g., `console.error('Failed to retrieve documents:', error)`).
-- Use custom error classes for specific error types in the agent pipeline.
+- Use custom error classes for specific error types in the agent pipeline and ingestion process.
+- Implement proper cleanup in error handlers, especially for file operations in ingesters.
 
 ## Testing
-- Write unit tests for utility functions and pipeline components.
+- Write unit tests for utility functions, pipeline components, and ingester classes.
 - Use Jest for testing framework.
 - Mock external dependencies in tests.
-- Aim for high test coverage in core agent functionality.
+- Aim for high test coverage in core agent functionality and ingestion processes.
+- Test each ingester implementation separately.
 
 ## Code Organization
 - Keep files focused on a single responsibility.
 - Group related functionality in directories.
 - Use barrel exports (index.ts files) to simplify imports.
 - Separate business logic from UI components.
+- Organize ingesters by source type in dedicated directories.
+- Follow the template method pattern for ingester implementations.

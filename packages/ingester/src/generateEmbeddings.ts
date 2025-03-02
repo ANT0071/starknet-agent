@@ -5,7 +5,7 @@ import { VectorStore } from '@starknet-agent/agents/index';
 import { getVectorDbConfig } from '@starknet-agent/agents/config';
 import { loadOpenAIEmbeddingsModels } from '@starknet-agent/backend/lib/providers/openai';
 import { DocumentSource } from '@starknet-agent/agents/core/types';
-import { IngesterFactory } from '../src/IngesterFactory';
+import { IngesterFactory } from './IngesterFactory';
 
 /**
  * Initialize environment variables
