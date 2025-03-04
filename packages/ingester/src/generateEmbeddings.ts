@@ -18,6 +18,12 @@ dotenv.config();
 let vectorStore: VectorStore | null = null;
 
 /**
+ * Global flag for yes mode (skip all prompts)
+ */
+export const YES_MODE =
+  process.argv.includes('-y') || process.argv.includes('--yes');
+
+/**
  * Set up the vector store with the appropriate configuration and embedding model
  *
  * @returns Promise<VectorStore> - The initialized vector store
@@ -36,6 +42,10 @@ async function setupVectorStore(): Promise<VectorStore> {
     const embeddingModels = await loadOpenAIEmbeddingsModels();
     const textEmbedding3Large = embeddingModels['Text embedding 3 large'];
 
+    if (!textEmbedding3Large) {
+      throw new Error('Text embedding 3 large model not found');
+    }
+
     // Initialize vector store
     vectorStore = await VectorStore.getInstance(dbConfig, textEmbedding3Large);
     logger.info('VectorStore initialized successfully');
@@ -52,6 +62,12 @@ async function setupVectorStore(): Promise<VectorStore> {
  * @returns Promise<string> - The selected target
  */
 async function promptForTarget(): Promise<DocumentSource | 'Everything'> {
+  // If yes mode is enabled, return 'Everything' without prompting
+  if (YES_MODE) {
+    logger.info('Yes mode enabled, ingesting everything without prompts');
+    return 'Everything';
+  }
+
   const rl = createInterface({
     input: process.stdin,
     output: process.stdout,
