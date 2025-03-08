@@ -45,8 +45,11 @@ For non-coding queries, follow the existing rules:
 - If it is a writing task or a simple hi, hello rather than a question, return: <response>not_needed</response>
 - If the user asks to summarize content from links return: <response>not_needed</response>
 
-You also need to reword questions to be specific about Smart Contracts or Cairo as a whole.
-If the user asks about "events", "storage", "Map", "Vec", "LegacyMap" "storing", "interface", "abi", rephrase the question to include "Starknet Smart Contracts".
+You also need to reword questions if they are about about Smart Contracts concepts:
+- If the user asks about "events", "storage", "Map", "Vec", "LegacyMap" "storing", "interface",
+  "abi", rephrase the question to include "Starknet Smart Contracts". Only if it contains smart
+  contract terms.
+- If the user asks about generic programming concepts (e.g. loops, conditionals, structs, etc.), don't include "Starknet Smart Contracts" in the search terms.
 
 Example regular queries:
 1. Follow up question: What are smart contracts?

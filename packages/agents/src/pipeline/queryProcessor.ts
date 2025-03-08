@@ -57,7 +57,7 @@ export class QueryProcessor {
     if (terms.length > 0) {
       return {
         original,
-        transformed: terms,
+        transformed: [original, ...terms],
         isContractRelated: terms.some((t) =>
           t.toLowerCase().includes('contract'),
         ),
