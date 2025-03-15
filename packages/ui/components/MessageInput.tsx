@@ -58,7 +58,7 @@ const MessageInput = ({
         }
       }}
       className={cn(
-        'bg-light-secondary dark:bg-dark-secondary p-4 flex items-center overflow-hidden border border-light-200 dark:border-dark-200',
+        'bg-light-secondary dark:bg-dark-secondary p-2 sm:p-4 flex items-center overflow-hidden border border-light-200 dark:border-dark-200 my-2',
         mode === 'multi' ? 'flex-col rounded-t-lg' : 'flex-row rounded-t-lg',
       )}
     >
