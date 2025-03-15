@@ -19,7 +19,7 @@ export class RagPipeline {
   constructor(
     private llmConfig: LLMConfig,
     private embeddings: Embeddings,
-    private config: RagSearchConfig,
+    public config: RagSearchConfig,
   ) {
     this.queryProcessor = new QueryProcessor(llmConfig.fastLLM, config);
     this.documentRetriever = new DocumentRetriever(embeddings, config);

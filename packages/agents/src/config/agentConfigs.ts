@@ -66,14 +66,6 @@ export type AvailableAgents =
   | 'cairoByExample'
   | 'openZeppelinDocs';
 
-const agent_to_source = {
-  cairoBook: DocumentSource.CAIRO_BOOK,
-  starknetDocs: DocumentSource.STARKNET_DOCS,
-  starknetEcosystem: DocumentSource.STARKNET_ECOSYSTEM,
-  starknetFoundry: DocumentSource.STARKNET_FOUNDRY,
-  succintCairoBook: DocumentSource.CAIRO_BOOK,
-};
-
 // We'll make this a factory function instead of a static object
 export const createAgentConfigs = (
   vectorStore: VectorStore,

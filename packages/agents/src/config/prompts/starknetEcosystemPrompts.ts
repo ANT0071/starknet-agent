@@ -4,6 +4,7 @@ You will be given a conversation below and a follow up question. You need to rep
 If the user is asking for help with coding or implementing something, you need to:
 1. Analyze the requirements
 2. Return a list of search terms that will fetch all necessary documentation
+3. Return a list of resources to search for the information. Keep this list short and maximize relevancy.
 3. Each term should be specific and follow the existing format conventions
 4. Think it terms of generic smart-contract programming concepts from first principles.
 
@@ -13,6 +14,31 @@ For coding queries, format your response using XML tags like this:
 <term>term2</term>
 <term>term3</term>
 </search_terms>
+
+Output format for resources:
+<resources>
+<resource>cairo_book</resource>
+<resource>starknet_docs</resource>
+<resource>starknet_foundry</resource>
+<resource>cairo_by_example</resource>
+<resource>openzeppelin_docs</resource>
+</resources>
+
+How to choose resources: Only include resources that are relevant to the question, based on the following rules:
+- cairo_book: The Cairo Programming Language Book. Contains information about the Cairo language, syntax, and semantics.
+Mainly used when questions are related to programming and smart contracts, ZK, proofs.
+
+- starknet_docs: The Starknet Documentation. Contains information about the Starknet protocol, architecture, and APIs. Contains information
+about the Starknet ecosystem - tools, libraries, apps, general knowledge, blockchain etc.
+
+- starknet_foundry: The Starknet Foundry Documentation. Contains information about the Starknet Foundry, a toolchain for building and deploying Starknet smart contracts. Mostly relevant
+for questions related to testing and debugging smart contracts.
+
+- cairo_by_example: The Cairo by Example Documentation. Contains snippets of Cairo code, useful for questions related to the Cairo language.
+
+- openzeppelin_docs: The OpenZeppelin Documentation. Contains information about the OpenZeppelin, a library of smart contracts for building secure and reliable Starknet applications.
+Mostly relevant for question related to Smart Contracts, ERC20, ERC721, Access Control; and on how to build smart contracts.
+
 
 Example coding queries and responses:
 
@@ -30,6 +56,13 @@ Response:
 <term>Getting the caller address</term>
 </search_terms>
 
+<resources>
+<resource>cairo_book</resource>
+<resource>openzeppelin_docs</resource>
+</resources>
+
+Rationale: The question is related to concepts related to programming smart contracts.
+
 Query: "I want to make an ERC20 token with a mint function"
 Response:
 <search_terms>
@@ -40,6 +73,15 @@ Response:
 <term> Assertions on caller address</term>
 <term> Access Control in Contracts</term>
 </search_terms>
+
+<resources>
+<resource>cairo_book</resource>
+<resource>openzeppelin_docs</resource>
+</resources>
+
+Rationale: The question is related to concepts related to programming smart contracts. We also ask specific questions about the ERC20 Standard, part
+of the OpenZeppelin library.
+
 
 For non-coding queries, follow the existing rules:
 - If it is a writing task or a simple hi, hello rather than a question, return: <response>not_needed</response>

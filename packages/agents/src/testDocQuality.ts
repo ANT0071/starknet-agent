@@ -54,10 +54,7 @@ program
     try {
       // Validate source
       const source = options.source as DocumentSource;
-      if (!Object.values(DocumentSource).includes(source)) {
-        logger.error(`Invalid source: ${source}`);
-        process.exit(1);
-      }
+      const focus = source as string;
 
       // Load test file
       const testFilePath = path.resolve(process.cwd(), options.testFile);
@@ -95,10 +92,13 @@ program
       const dbConfig = getVectorDbConfig();
       const vectorStore = await VectorStore.getInstance(dbConfig, embeddings);
 
-      const source_to_agent_name: Record<DocumentSource, AvailableAgents> = {
+      const source_to_agent_name: Record<
+        DocumentSource | 'starknet_ecosystem',
+        AvailableAgents
+      > = {
         [DocumentSource.CAIRO_BOOK]: 'cairoBook',
         [DocumentSource.STARKNET_DOCS]: 'starknetDocs',
-        [DocumentSource.STARKNET_ECOSYSTEM]: 'starknetEcosystem',
+        starknet_ecosystem: 'starknetEcosystem',
         [DocumentSource.STARKNET_FOUNDRY]: 'starknetFoundry',
         [DocumentSource.CAIRO_BY_EXAMPLE]: 'cairoByExample',
         [DocumentSource.OPENZEPPELIN_DOCS]: 'openZeppelinDocs',
@@ -117,7 +117,7 @@ program
       const ragConfig: RagSearchConfig = {
         ...agentConfig,
         vectorStore,
-        sources: source,
+        sources: agentConfig.sources,
       };
 
       // Initialize DocQualityTester
@@ -135,8 +135,8 @@ program
       }
 
       // Run tests with detailed output options
-      logger.info(`Starting documentation quality tests for ${source}`);
-      const results = await tester.testDocQuality(testSet, {
+      logger.info(`Starting documentation quality tests for focus ${focus}`);
+      const results = await tester.testDocQuality(testSet, focus, {
         showDetailedOutput: options.detailedOutput,
         thresholds,
       });
@@ -152,7 +152,7 @@ program
       } else {
         console.log('\nDocumentation Quality Report');
         console.log('===========================\n');
-        console.log(`Source: ${report.results.source}`);
+        console.log(`Focus: ${report.results.focus}`);
         console.log(`Version: ${report.results.version}`);
         console.log(`Test Cases: ${report.results.caseResults.length}`);
         console.log('\nSummary:');
@@ -205,11 +205,7 @@ program
   .action(async (options) => {
     try {
       // Validate source
-      const source = options.source as DocumentSource;
-      if (!Object.values(DocumentSource).includes(source)) {
-        logger.error(`Invalid source: ${source}`);
-        process.exit(1);
-      }
+      const focus = options.source as DocumentSource;
 
       // Load result files
       const baselinePath = path.resolve(process.cwd(), options.baseline);
@@ -257,21 +253,24 @@ program
       const dbConfig = getVectorDbConfig();
       const vectorStore = await VectorStore.getInstance(dbConfig, embeddings);
 
-      const source_to_agent_name: Record<DocumentSource, AvailableAgents> = {
+      const focus_to_agent_name: Record<
+        DocumentSource | 'starknet_ecosystem',
+        AvailableAgents
+      > = {
         [DocumentSource.CAIRO_BOOK]: 'cairoBook',
         [DocumentSource.STARKNET_DOCS]: 'starknetDocs',
-        [DocumentSource.STARKNET_ECOSYSTEM]: 'starknetEcosystem',
+        starknet_ecosystem: 'starknetEcosystem',
         [DocumentSource.STARKNET_FOUNDRY]: 'starknetFoundry',
         [DocumentSource.CAIRO_BY_EXAMPLE]: 'cairoByExample',
         [DocumentSource.OPENZEPPELIN_DOCS]: 'openZeppelinDocs',
       };
       // Get agent configuration
       const agentConfig = getAgentConfig(
-        source_to_agent_name[source],
+        focus_to_agent_name[focus],
         vectorStore,
       );
       if (!agentConfig) {
-        logger.error(`Agent configuration not found for source: ${source}`);
+        logger.error(`Agent configuration not found for focus: ${focus}`);
         process.exit(1);
       }
 
@@ -279,11 +278,11 @@ program
       const tester = new DocQualityTester(llmConfig, embeddings, {
         ...agentConfig,
         vectorStore: {} as any, // Not needed for comparison
-        sources: source,
+        sources: agentConfig.sources,
       });
 
       // Compare results
-      logger.info(`Comparing documentation quality for ${source}`);
+      logger.info(`Comparing documentation quality for ${focus}`);
       const report = await tester.compareResults(
         baseline.results,
         current.results,
@@ -297,7 +296,7 @@ program
       } else {
         console.log('\nDocumentation Quality Comparison Report');
         console.log('=====================================\n');
-        console.log(`Source: ${report.results.source}`);
+        console.log(`Focus: ${report.results.focus}`);
         console.log(`Baseline Version: ${baseline.results.version}`);
         console.log(`Current Version: ${current.results.version}`);
 

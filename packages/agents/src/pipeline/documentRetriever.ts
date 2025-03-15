@@ -39,6 +39,9 @@ export class DocumentRetriever {
     const searchQuery = Array.isArray(query.transformed)
       ? query.transformed
       : [query.transformed];
+    if (query.resources?.length > 0) {
+      sources = query.resources;
+    }
     const searchPromises = searchQuery.map((q) =>
       this.config.vectorStore.similaritySearch(
         q,

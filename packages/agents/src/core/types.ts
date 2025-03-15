@@ -27,6 +27,7 @@ export interface ProcessedQuery {
   transformed: string | string[]; // Single query or list of search terms
   isContractRelated?: boolean;
   isTestRelated?: boolean;
+  resources?: DocumentSource[];
 }
 
 export interface RetrievedDocuments {
@@ -58,7 +59,6 @@ export interface RagSearchConfig extends AgentConfig {
 export enum DocumentSource {
   CAIRO_BOOK = 'cairo_book',
   STARKNET_DOCS = 'starknet_docs',
-  STARKNET_ECOSYSTEM = 'starknet_ecosystem',
   STARKNET_FOUNDRY = 'starknet_foundry',
   CAIRO_BY_EXAMPLE = 'cairo_by_example',
   OPENZEPPELIN_DOCS = 'openzeppelin_docs',
@@ -82,8 +82,7 @@ export interface ParsedSection {
 
 // Documentation Quality Testing Types
 export interface DocTestSet {
-  source: DocumentSource;
-  version: string; // Documentation version being tested
+  version: string;
   testCases: TestCase[]; // Collection of test cases
   metadata?: {
     // Optional metadata
@@ -104,7 +103,7 @@ export interface TestCase {
 }
 
 export interface TestResults {
-  source: DocumentSource;
+  focus: string;
   version: string;
   executedAt: Date;
   metrics: {

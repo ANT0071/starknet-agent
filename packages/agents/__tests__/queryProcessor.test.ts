@@ -42,7 +42,8 @@ describe('QueryProcessor', () => {
     // Mock the LLM invoke method to return a simulated response
     // Using a simple object that has the content property
     mockLLM.invoke.mockResolvedValue({
-      content: '<term>cairo contract</term><term>starknet</term>',
+      content:
+        '<term>cairo contract</term><term>starknet</term><resources><resource>cairo_book</resource><resource>starknet_docs</resource></resources>',
     } as any);
 
     // Create the QueryProcessor instance
@@ -75,6 +76,7 @@ describe('QueryProcessor', () => {
           ],
           isContractRelated: true,
           isTestRelated: false,
+          resources: [DocumentSource.CAIRO_BOOK, DocumentSource.STARKNET_DOCS],
         }),
       );
     });

@@ -64,6 +64,7 @@ export class DocQualityTester {
    */
   async testDocQuality(
     testSet: DocTestSet,
+    focus: string,
     options: {
       showDetailedOutput?: boolean;
       thresholds?: {
@@ -86,7 +87,7 @@ export class DocQualityTester {
       ...options.thresholds,
     };
 
-    logger.info(`Starting documentation quality test for ${testSet.source}`, {
+    logger.info(`Starting documentation quality test for ${focus}`, {
       version: testSet.version,
       testCases: testSet.testCases.length,
     });
@@ -94,7 +95,7 @@ export class DocQualityTester {
     try {
       // Execute each test case
       const casePromises = testSet.testCases.map((testCase) =>
-        this.executeTestCase(testCase, testSet.source),
+        this.executeTestCase(testCase),
       );
 
       const caseResults = await Promise.all(casePromises);
@@ -103,7 +104,7 @@ export class DocQualityTester {
       const metrics = this.calculateAggregateMetrics(caseResults, testSet);
 
       const results: TestResults = {
-        source: testSet.source,
+        focus,
         version: testSet.version,
         executedAt: new Date(),
         metrics,
@@ -115,12 +116,9 @@ export class DocQualityTester {
         this.printDetailedTestResults(results, thresholds);
       }
 
-      logger.info(
-        `Completed documentation quality test for ${testSet.source}`,
-        {
-          overallScore: metrics.overall.avgClarityScore.toFixed(2),
-        },
-      );
+      logger.info(`Completed documentation quality test for ${focus}`, {
+        overallScore: metrics.overall.avgClarityScore.toFixed(2),
+      });
 
       return results;
     } catch (error) {
@@ -140,7 +138,7 @@ export class DocQualityTester {
    * @returns Quality report with recommendations
    */
   async generateReport(results: TestResults): Promise<QualityReport> {
-    logger.info(`Generating quality report for ${results.source}`, {
+    logger.info(`Generating quality report for ${results.focus}`, {
       testCases: results.caseResults.length,
     });
 
@@ -175,7 +173,7 @@ export class DocQualityTester {
     current: TestResults,
   ): Promise<QualityReport> {
     logger.info(`Comparing results between versions`, {
-      source: current.source,
+      source: current.focus,
       baselineVersion: baseline.version,
       currentVersion: current.version,
     });
@@ -280,10 +278,7 @@ export class DocQualityTester {
    * @param source Documentation source to test against
    * @returns Results for this test case
    */
-  private async executeTestCase(
-    testCase: TestCase,
-    source: DocumentSource,
-  ): Promise<TestCaseResult> {
+  private async executeTestCase(testCase: TestCase): Promise<TestCaseResult> {
     logger.info(`Executing test case: "${testCase.query}"`, {
       type: testCase.type,
       difficulty: testCase.difficulty,
@@ -291,6 +286,7 @@ export class DocQualityTester {
 
     try {
       // Prepare input for RAG pipeline
+      const config_sources = this.config.sources;
       const input: RagInput = {
         query: testCase.query,
         chatHistory: [
@@ -298,7 +294,7 @@ export class DocQualityTester {
             `You are a helpful assistant. Answer the question "${testCase.query}" based on the following context`,
           ),
         ],
-        sources: source,
+        sources: config_sources,
       };
 
       // Custom execution to capture intermediates
@@ -665,7 +661,7 @@ Return ONLY a JSON object with your evaluation, no other text:
 
       // Generate recommendations using LLM
       const recommendations = await this.generateContentRecommendations(
-        results.source,
+        results.focus,
         poorAnswerCases,
       );
 
@@ -955,7 +951,7 @@ Provide specific, actionable recommendations for improving the documentation to 
       const prompt = `
 You are an expert documentation analyst. You need to provide recommendations based on the comparison between baseline and current documentation performance:
 
-Source: ${current.source}
+Source: ${current.focus}
 Baseline Version: ${baseline.version}
 Current Version: ${current.version}
 
@@ -1025,7 +1021,7 @@ Format as JSON with the following structure (output ONLY valid JSON):
           {
             type: 'content',
             priority: 'high',
-            description: `The ${current.source} documentation has regressed since ${baseline.version}. Address the identified regressions.`,
+            description: `The ${current.focus} documentation has regressed since ${baseline.version}. Address the identified regressions.`,
             affectedTopics: regressionCases.slice(0, 3).map((c) => c.query),
           },
         ];
@@ -1058,7 +1054,7 @@ Format as JSON with the following structure (output ONLY valid JSON):
       ).length;
 
       let prompt = `
-Summarize the documentation quality test results for ${results.source} (version ${results.version}):
+Summarize the documentation quality test results for ${results.focus} (version ${results.version}):
 
 Test Cases: ${results.caseResults.length}
 Overall Metrics:
@@ -1090,7 +1086,7 @@ Provide a concise 2-3 paragraph summary of the test results, highlighting streng
       return result.content.toString();
     } catch (error) {
       logger.error(`Error generating summary: ${error}`);
-      let summaryText = `Documentation quality test results for ${results.source} (version ${results.version}) show that ${(results.metrics.overall.percentAnswered * 100).toFixed(2)}% of questions were answered with an average clarity score of ${results.metrics.overall.avgClarityScore.toFixed(2)} and source alignment of ${results.metrics.overall.avgSourceAlignment.toFixed(2)}.`;
+      let summaryText = `Documentation quality test results for ${results.focus} (version ${results.version}) show that ${(results.metrics.overall.percentAnswered * 100).toFixed(2)}% of questions were answered with an average clarity score of ${results.metrics.overall.avgClarityScore.toFixed(2)} and source alignment of ${results.metrics.overall.avgSourceAlignment.toFixed(2)}.`;
 
       if (results.metrics.overall.avgContentSatisfaction !== undefined) {
         summaryText += ` Content satisfaction score is ${results.metrics.overall.avgContentSatisfaction.toFixed(2)}.`;
@@ -1120,7 +1116,7 @@ Provide a concise 2-3 paragraph summary of the test results, highlighting streng
       let prompt = `
 Summarize the comparison between baseline and current documentation test results:
 
-Source: ${current.source}
+Source: ${current.focus}
 Baseline Version: ${baseline.version}
 Current Version: ${current.version}
 
@@ -1165,7 +1161,7 @@ Provide a concise 2-3 paragraph summary comparing the baseline and current versi
       return result.content.toString();
     } catch (error) {
       logger.error(`Error generating comparison summary: ${error}`);
-      let comparisonText = `Comparison between ${baseline.version} and ${current.version} of ${current.source} documentation shows ${improvements.length} improvements and ${regressions.length} regressions. The percentage of answered questions changed from ${(baseline.metrics.overall.percentAnswered * 100).toFixed(2)}% to ${(current.metrics.overall.percentAnswered * 100).toFixed(2)}%, clarity score from ${baseline.metrics.overall.avgClarityScore.toFixed(2)} to ${current.metrics.overall.avgClarityScore.toFixed(2)}, and source alignment from ${baseline.metrics.overall.avgSourceAlignment.toFixed(2)} to ${current.metrics.overall.avgSourceAlignment.toFixed(2)}.`;
+      let comparisonText = `Comparison between ${baseline.version} and ${current.version} of ${current.focus} documentation shows ${improvements.length} improvements and ${regressions.length} regressions. The percentage of answered questions changed from ${(baseline.metrics.overall.percentAnswered * 100).toFixed(2)}% to ${(current.metrics.overall.percentAnswered * 100).toFixed(2)}%, clarity score from ${baseline.metrics.overall.avgClarityScore.toFixed(2)} to ${current.metrics.overall.avgClarityScore.toFixed(2)}, and source alignment from ${baseline.metrics.overall.avgSourceAlignment.toFixed(2)} to ${current.metrics.overall.avgSourceAlignment.toFixed(2)}.`;
 
       if (
         baseline.metrics.overall.avgContentSatisfaction !== undefined &&
@@ -1239,7 +1235,7 @@ Provide a concise 2-3 paragraph summary comparing the baseline and current versi
     const BOLD = '\x1b[1m';
 
     console.log(
-      `\n${BOLD}Test Results for ${results.source} (${results.version})${RESET}\n`,
+      `\n${BOLD}Test Results for ${results.focus} (${results.version})${RESET}\n`,
     );
     console.log(`${BOLD}Overall Metrics:${RESET}`);
     console.log(

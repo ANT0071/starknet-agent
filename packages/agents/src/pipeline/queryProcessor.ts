@@ -1,7 +1,12 @@
 import { BaseChatModel } from '@langchain/core/language_models/chat_models';
 import { PromptTemplate } from '@langchain/core/prompts';
 import { StringOutputParser } from '@langchain/core/output_parsers';
-import { ProcessedQuery, RagInput, RagSearchConfig } from '../core/types';
+import {
+  DocumentSource,
+  ProcessedQuery,
+  RagInput,
+  RagSearchConfig,
+} from '../core/types';
 import formatChatHistoryAsString from '../utils/formatHistory';
 import { parseXMLContent } from '../config/agentConfigs';
 import logger from '../utils/logger';
@@ -53,6 +58,12 @@ export class QueryProcessor {
     original: string,
     context: string,
   ): ProcessedQuery {
+    const resources = parseXMLContent(response, 'resource');
+    // Validate that resources are valid DocumentSource values
+    const validResources = resources.filter((resource) =>
+      Object.values(DocumentSource).includes(resource as DocumentSource),
+    ) as DocumentSource[];
+
     const terms = parseXMLContent(response, 'term');
     if (terms.length > 0) {
       return {
@@ -62,6 +73,7 @@ export class QueryProcessor {
           t.toLowerCase().includes('contract'),
         ),
         isTestRelated: this.isTestRelated(terms.join(' ')),
+        resources: validResources,
       };
     }
 
@@ -74,6 +86,7 @@ export class QueryProcessor {
         transformed.toLowerCase().includes('contract') ||
         context.includes('<search_terms>'),
       isTestRelated: this.isTestRelated(transformed),
+      resources: validResources,
     };
   }
 
