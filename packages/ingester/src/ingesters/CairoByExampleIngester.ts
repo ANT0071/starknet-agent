@@ -1,6 +1,7 @@
 import * as path from 'path';
 import { BookConfig } from '../utils/types';
 import { MarkdownIngester } from './MarkdownIngester';
+import { DocumentSource } from '@starknet-agent/agents/index';
 
 /**
  * Ingester for the Cairo By Example documentation
@@ -24,7 +25,7 @@ export class CairoByExampleIngester extends MarkdownIngester {
       urlSuffix: '.html',
     };
 
-    super(config, 'cairo_by_example');
+    super(config, DocumentSource.CAIRO_BY_EXAMPLE);
   }
 
   /**

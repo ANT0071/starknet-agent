@@ -39,7 +39,7 @@ export class StarknetFoundryIngester extends MarkdownIngester {
       urlSuffix: '.html',
     };
 
-    super(config, 'starknet_foundry');
+    super(config, DocumentSource.STARKNET_FOUNDRY);
   }
 
   /**
