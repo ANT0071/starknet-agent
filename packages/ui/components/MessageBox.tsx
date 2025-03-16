@@ -459,14 +459,21 @@ const MessageBox = ({
       let currentText = '';
 
       for (const line of lines) {
-        if (line.trim().startsWith('```') && !inCodeBlock && !inLatexBlock) {
+        // Check if it's a line with code. Trim is not fine as it can be with bullet points
+        // like * ```cairo
+        const isFencedCodeLine = line.includes('```');
+        const languageMatch = line.match(/```(\w+)/);
+        const language = languageMatch ? languageMatch[1] : '';
+        const lineWithoutCodeAndLanguage = line
+          .replace('```', '')
+          .replace(language, '')
+          .trim();
+        if (isFencedCodeLine && !inCodeBlock && !inLatexBlock) {
           // Start of code block
           if (currentText) {
             parts.push(<Markdown key={parts.length}>{currentText}</Markdown>);
-            currentText = '';
+            currentText = lineWithoutCodeAndLanguage;
           }
-
-          const language = line.trim().replace('```', '').trim();
 
           // Check if this is a math block
           if (language === 'math' || language === 'latex') {
@@ -487,7 +494,7 @@ const MessageBox = ({
                 language={codeLanguage}
                 isComplete={true}
               >
-                {codeContent.trim()}
+                {codeContent}
               </CodeBlock>,
             );
             codeContent = '';
