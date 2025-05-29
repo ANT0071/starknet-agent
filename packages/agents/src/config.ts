@@ -1,10 +1,11 @@
-//TODO deduplicate this file!
-
 import fs from 'fs';
 import path from 'path';
 import toml from '@iarna/toml';
 
 const configFileName = 'config.toml';
+
+// Cache for the loaded config
+let configCache: Config | null = null;
 
 export interface VectorStoreConfig {
   MONGODB_URI: string;
@@ -47,6 +48,11 @@ type RecursivePartial<T> = {
 };
 
 const loadConfig = () => {
+  // Return cached config if available
+  if (configCache !== null) {
+    return configCache;
+  }
+
   // Find the package root by looking for package.json
   let packageRoot = __dirname;
   while (
@@ -60,9 +66,17 @@ const loadConfig = () => {
     throw new Error('Could not find package.json in any parent directory');
   }
 
-  return toml.parse(
+  // Load and cache the config
+  configCache = toml.parse(
     fs.readFileSync(path.join(packageRoot, configFileName), 'utf-8'),
   ) as any as Config;
+
+  return configCache;
+};
+
+// Function to invalidate the cache when needed
+export const invalidateConfigCache = () => {
+  configCache = null;
 };
 
 export const isHostedMode = () => loadConfig().HOSTED_MODE !== undefined;
@@ -126,6 +140,9 @@ export const updateConfig = (config: RecursivePartial<Config>) => {
     path.join(packageRoot, configFileName),
     toml.stringify(config),
   );
+
+  // Invalidate the cache after updating the config
+  invalidateConfigCache();
 };
 
 export const getStarknetFoundryVersion = () =>

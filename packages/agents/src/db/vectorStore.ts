@@ -1,6 +1,7 @@
 import { MongoDBAtlasVectorSearch } from '@langchain/mongodb';
 import { MongoClient, Collection, ObjectId, Filter } from 'mongodb';
 import { DocumentInterface } from '@langchain/core/documents';
+import { Document } from '@langchain/core/documents';
 import { OpenAIEmbeddings } from '@langchain/openai';
 import { Embeddings } from '@langchain/core/embeddings';
 import logger from '../utils/logger';
@@ -84,7 +85,10 @@ export class VectorStore {
    * @param uniqueIds - Optional array of unique IDs for the documents
    * @returns Promise<void>
    */
-  async addDocuments(documents: any[], uniqueIds?: string[]): Promise<void> {
+  async addDocuments(
+    documents: Document[],
+    uniqueIds?: string[],
+  ): Promise<void> {
     logger.info(`Adding ${documents.length} documents to the vector store`);
     await this.vectorSearch.addDocuments(documents, { ids: uniqueIds });
   }
