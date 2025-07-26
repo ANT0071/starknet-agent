@@ -92,9 +92,9 @@ export const createAgentConfigs = (
     vectorStore,
     contractTemplate: basicContractTemplate,
     testTemplate: basicTestTemplate,
-    maxSourceCount: 5,
+    maxSourceCount: 7,
     similarityThreshold: 0.5,
-    sources: [DocumentSource.CAIRO_BOOK],
+    sources: Object.values(DocumentSource),
   },
 
   cairoCoder: {
