@@ -35,6 +35,7 @@ You will be given a conversation below and a follow up question. Your primary ta
 *   **starknet_foundry:** The Starknet Foundry Documentation. For using the Foundry toolchain: writing, compiling, testing (unit tests, integration tests), and debugging Starknet contracts.
 *   **cairo_by_example:** Cairo by Example Documentation. Provides practical Cairo code snippets for specific language features or common patterns. Useful for "how-to" syntax questions.
 *   **openzeppelin_docs:** OpenZeppelin Cairo Contracts Documentation. For using the OZ library: standard implementations (ERC20, ERC721), access control, security patterns, contract upgradeability, Governance patterns. Crucial for building standard-compliant contracts or using pre-built components.
+*   **starknet_js:** Starknet.js Documentation. For using the Starknet.js JavaScript/TypeScript library: connecting to networks, managing accounts, interacting with contracts, handling transactions, RPC calls, serialization, utilities.
 
 **Example Scenarios:**
 
