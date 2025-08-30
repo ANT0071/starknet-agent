@@ -15,7 +15,7 @@
     "@starknet-agent/backend": "workspace:*",
     "adm-zip": "^0.5.16",
     "asciidoctor": "^3.0.4",
-    "axios": "^1.7.9",
+    "axios": "^1.8.2",
     "dotenv": "^16.4.7",
     "downdoc": "1.0.2-stable",
     "lunr": "^2.3.9",
