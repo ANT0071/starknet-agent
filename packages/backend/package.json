@@ -14,8 +14,8 @@
   "dependencies": {
     "@iarna/toml": "^2.2.5",
     "@langchain/anthropic": "^0.2.18",
-    "@langchain/community": "^0.3.32",
-    "@langchain/core": "^0.2.36",
+    "@langchain/community": "^1.1.14",
+    "@langchain/core": "^0.3.80",
     "@langchain/google-genai": "^0.1.8",
     "@langchain/openai": "^0.0.25",
     "@starknet-agent/agents": "workspace:*",
